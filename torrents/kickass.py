@@ -1,25 +1,25 @@
 import asyncio
 import re
 import time
-
 import aiohttp
 from bs4 import BeautifulSoup
-
 from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import KICKASS
+from constants.headers import HEADER_AIO
 
 
 class Kickass:
     def __init__(self):
-        self.BASE_URL = "https://kickasstorrents.to"
+        self.BASE_URL = KICKASS
         self.LIMIT = None
 
     @decorator_asyncio_fix
     async def _individual_scrap(self, session, url, obj):
         try:
-            async with session.get(url) as res:
+            async with session.get(url, headers=HEADER_AIO) as res:
                 html = await res.text(encoding="ISO-8859-1")
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 try:
                     poster = soup.find("a", class_="movieCover")
                     if poster:
@@ -35,7 +35,7 @@ class Kickass:
                     ).group(0)
                     obj["magnet"] = magnet
                 except:
-                    pass
+                    ...
         except:
             return None
 
@@ -53,9 +53,8 @@ class Kickass:
 
     def _parser(self, htmls):
         try:
-
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 list_of_urls = []
                 my_dict = {"data": []}
                 for tr in soup.select("tr.odd,tr.even"):
@@ -93,7 +92,7 @@ class Kickass:
                     my_dict["current_page"] = current_page
                     my_dict["total_pages"] = int(total_page)
                 except:
-                    pass
+                    ...
                 return my_dict, list_of_urls
         except:
             return None, None
@@ -108,7 +107,7 @@ class Kickass:
     async def parser_result(self, start_time, url, session):
         htmls = await Scraper().get_all_results(session, url)
         result, urls = self._parser(htmls)
-        if result != None:
+        if result is not None:
             results = await self._get_torrent(result, session, urls)
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])

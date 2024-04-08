@@ -1,25 +1,25 @@
 import asyncio
 import re
 import time
-
 import aiohttp
 from bs4 import BeautifulSoup
-
 from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import LIMETORRENT
+from constants.headers import HEADER_AIO
 
 
 class Limetorrent:
     def __init__(self):
-        self.BASE_URL = "https://www.limetorrents.pro"
+        self.BASE_URL = LIMETORRENT
         self.LIMIT = None
 
     @decorator_asyncio_fix
     async def _individual_scrap(self, session, url, obj):
         try:
-            async with session.get(url) as res:
+            async with session.get(url, headers=HEADER_AIO) as res:
                 html = await res.text(encoding="ISO-8859-1")
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 try:
                     a_tag = soup.find_all("a", class_="csprite_dltorrent")
                     obj["torrent"] = a_tag[0]["href"]
@@ -28,7 +28,7 @@ class Limetorrent:
                         r"([{a-f\d,A-F\d}]{32,40})\b", obj["magnet"]
                     ).group(0)
                 except:
-                    pass
+                    ...
         except:
             return None
 
@@ -47,7 +47,7 @@ class Limetorrent:
     def _parser(self, htmls, idx=0):
         try:
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 list_of_urls = []
                 my_dict = {"data": []}
 
@@ -86,7 +86,7 @@ class Limetorrent:
                     my_dict["current_page"] = current_page
                     my_dict["total_pages"] = total_page
                 except:
-                    pass
+                    ...
                 return my_dict, list_of_urls
         except:
             return None, None
@@ -101,7 +101,7 @@ class Limetorrent:
     async def parser_result(self, start_time, url, session, idx=0):
         htmls = await Scraper().get_all_results(session, url)
         result, urls = self._parser(htmls, idx)
-        if result != None:
+        if result is not None:
             results = await self._get_torrent(result, session, urls)
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])

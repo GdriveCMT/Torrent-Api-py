@@ -1,11 +1,8 @@
-aiohttp
-fastapi
-uvicorn[standard]
+aiohttp[speedups]
 beautifulsoup4
-aioredis
 cloudscraper
-fastapi-cache2
-lxml
-requests
+fastapi==0.104.1
 gunicorn
-redis
+mangum
+requests
+uvicorn[standard]

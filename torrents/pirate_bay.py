@@ -1,50 +1,48 @@
-import asyncio
-import json
 import re
 import time
-
 import aiohttp
 from bs4 import BeautifulSoup
-
-from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import PIRATEBAY
 
 
 class PirateBay:
     def __init__(self):
-        self.BASE_URL = "https://thepiratebay10.org"
+        self.BASE_URL = PIRATEBAY
         self.LIMIT = None
 
     def _parser(self, htmls):
         try:
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
 
                 my_dict = {"data": []}
                 for tr in soup.find_all("tr")[1:]:
                     td = tr.find_all("td")
                     try:
-                        name = td[1].find("div").find("a").text
+                        name = td[1].find("a").text
                     except:
                         name = None
                     if name:
-                        url = td[1].find("div").find("a")["href"]
-                        magnet = td[1].find_all("a")[1]["href"]
-                        seeders = td[2].text
-                        leechers = td[3].text
-                        mixed = td[1].find_all("font")[0].text
-                        mixed = re.sub(r"(Uploaded|Size|ULed by)", "", mixed).split(",")
+                        url = td[1].find("a")["href"]
+                        magnet = td[3].find_all("a")[0]["href"]
+                        size = td[4].text.strip()
+                        seeders = td[5].text
+                        leechers = td[6].text
                         category = td[0].find_all("a")[0].text
+                        uploader = td[7].text
+                        dateUploaded = td[2].text
+                           
                         my_dict["data"].append(
                             {
                                 "name": name,
-                                "size": mixed[1].strip(),
+                                "size": size,
                                 "seeders": seeders,
                                 "leechers": leechers,
                                 "category": category,
-                                "uploader": mixed[-1].strip(),
+                                "uploader": uploader,
                                 "url": url,
-                                "date": mixed[0].strip(),
+                                "date": dateUploaded,
                                 "hash": re.search(
                                     r"([{a-f\d,A-F\d}]{32,40})\b", magnet
                                 ).group(0),
@@ -75,7 +73,7 @@ class PirateBay:
     async def parser_result(self, start_time, url, session):
         html = await Scraper().get_all_results(session, url)
         results = self._parser(html)
-        if results != None:
+        if results is not None:
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])
             return results

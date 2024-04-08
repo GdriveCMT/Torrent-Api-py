@@ -1,23 +1,19 @@
-import asyncio
-import re
 import time
-
 import aiohttp
 from bs4 import BeautifulSoup
-
-from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import GLODLS
 
 
 class Glodls:
     def __init__(self):
-        self.BASE_URL = "https://glodls.to"
+        self.BASE_URL = GLODLS
         self.LIMIT = None
 
     def _parser(self, htmls):
         try:
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
 
                 my_dict = {"data": []}
                 for tr in soup.find_all("tr", class_="t-row")[0:-1:2]:
@@ -53,7 +49,7 @@ class Glodls:
                     total_pages = total_pages.split("=")[-1]
                     my_dict["total_pages"] = int(total_pages) + 1
                 except:
-                    pass
+                    ...
                 return my_dict
         except:
             return None
@@ -73,7 +69,7 @@ class Glodls:
     async def parser_result(self, start_time, url, session):
         html = await Scraper().get_all_results(session, url)
         results = self._parser(html)
-        if results != None:
+        if results is not None:
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])
             return results

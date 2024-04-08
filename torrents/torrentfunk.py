@@ -1,25 +1,24 @@
 import asyncio
-import re
 import time
-
 import aiohttp
 from bs4 import BeautifulSoup
-
 from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import TORRENTFUNK
+from constants.headers import HEADER_AIO
 
 
 class TorrentFunk:
     def __init__(self):
-        self.BASE_URL = "https://www.torrentfunk.com"
+        self.BASE_URL = TORRENTFUNK
         self.LIMIT = None
 
     @decorator_asyncio_fix
     async def _individual_scrap(self, session, url, obj):
         try:
-            async with session.get(url) as res:
+            async with session.get(url, headers=HEADER_AIO) as res:
                 html = await res.text(encoding="ISO-8859-1")
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 try:
                     obj["torrent"] = soup.select_one(
                         "#right > main > div.content > table:nth-child(3) > tr > td:nth-child(2) > a"
@@ -31,7 +30,7 @@ class TorrentFunk:
                         "#right > main > div.content > table:nth-child(7) > tr:nth-child(3) > td:nth-child(2)"
                     ).text
                 except:
-                    pass
+                    ...
         except:
             return None
 
@@ -50,7 +49,7 @@ class TorrentFunk:
     def _parser(self, htmls, idx=1):
         try:
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 list_of_urls = []
                 my_dict = {"data": []}
 

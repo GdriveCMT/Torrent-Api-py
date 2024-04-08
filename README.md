@@ -28,24 +28,33 @@ $ git clone https://github.com/Ryuk-me/Torrent-Api-py
 # Go to the repository
 $ cd Torrent-Api-py
 
-# Install Depedencies
+# Install virtualenv
+$ pip install virtualenv
+
+# Create Virtual Env
+$ py -3 -m venv api-py
+
+# Activate Virtual Env [Windows]
+$ .\api-py\Scripts\activate
+
+# Activate Virtual Env [Linux]
+$ source api-py/bin/activate
+
+# Install Dependencies
 $ pip install -r requirements.txt
 
 # Start
 $ python main.py
 
+# (optional) To Use a PROXY, set the HTTP Proxy environment variable
+# You can also use a tor proxy using dperson/torproxy:latest
+$ export HTTP_PROXY="http://proxy-host:proxy-port"
+
+# To access API Open any browser/API Testing tool & move to the given URL
+$ localhost:8009 
+
 ```
 
-## ~~Setup Env File~~
-
-```sh
-# Change Environment variables
-
-Go to .env file / okteto-stack.yaml and add the following
-
-PYTHON_ENV=prod (if you are hosting)
-PYTHON_ENV=dev (if running local)
-```
 
 ---
 
@@ -246,7 +255,7 @@ PYTHON_ENV=dev (if running local)
 <summary style='font-size: 15px'><span style='font-size: 20px;font-weight:bold;'>Supported sites list</span></summary>
 <p>
 
-> [`api/v1/sites`](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/sites)
+> [`api/v1/sites`](https://torrent-api-py-nx0x.onrender.com/api/v1/sites)
 
 </p>
 </details>
@@ -256,7 +265,7 @@ PYTHON_ENV=dev (if running local)
 <summary style='font-size: 15px'><span style='font-size: 20px;font-weight:bold;'>Search</span></summary>
 <p>
 
-> [`api/v1/search`](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/search)
+> [`api/v1/search`](https://torrent-api-py-nx0x.onrender.com/api/v1/search)
 
 | Parameter | Required |  Type   | Default |                         Example                          |
 | :-------: | :------: | :-----: | :-----: | :------------------------------------------------------: |
@@ -335,9 +344,9 @@ PYTHON_ENV=dev (if running local)
 
 <pre>Here <b>limit = 5</b> will get 5 results from each site.</pre>
 
-> [api/v1/all/search?query=avengers](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/all/search?query=avengers)
+> [api/v1/all/search?query=avengers](https://torrent-api-py-nx0x.onrender.com/api/v1/all/search?query=avengers)
 
-> [api/v1/all/search?query=avengers&limit=5](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/all/search?query=avengers&limit=5)
+> [api/v1/all/search?query=avengers&limit=5](https://torrent-api-py-nx0x.onrender.com/api/v1/all/search?query=avengers&limit=5)
 
 </pre>
 </details>
@@ -354,9 +363,9 @@ PYTHON_ENV=dev (if running local)
 | :-------: | :------: | :-----: | :-----: | :---------------------------: |
 |   limit   |    ❌     | integer | Default | `api/v1/all/trending?limit=2` |
 
-> [api/v1/all/trending](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/all/trending)
+> [api/v1/all/trending](https://torrent-api-py-nx0x.onrender.com/api/v1/all/trending)
 
-> [api/v1/all/trending?limit=2](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/all/trending?limit=2)
+> [api/v1/all/trending?limit=2](https://torrent-api-py-nx0x.onrender.com/api/v1/all/trending?limit=2)
 
 </p>
 </details>
@@ -373,9 +382,9 @@ PYTHON_ENV=dev (if running local)
 | :-------: | :------: | :-----: | :-----: | :-------------------------: |
 |   limit   |    ❌     | integer | Default | `api/v1/all/recent?limit=2` |
 
-> [api/v1/all/recent](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/all/recent)
+> [api/v1/all/recent](https://torrent-api-py-nx0x.onrender.com/api/v1/all/recent)
 
-> [api/v1/all/recent?limit=2](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/all/recent)
+> [api/v1/all/recent?limit=2](https://torrent-api-py-nx0x.onrender.com/api/v1/all/recent)
 
 </p>
 </details>
@@ -384,7 +393,7 @@ PYTHON_ENV=dev (if running local)
 
 ## Want to Try api ?
 
-> [api/v1/search?site=1337x&query=eternals](https://6howpgdphtrt752l4oksuieqyu0qcqfu.lambda-url.ap-southeast-2.on.aws/api/v1/search?site=1337x&query=eternals)
+> [api/v1/search?site=1337x&query=eternals](https://torrent-api-py-nx0x.onrender.com/api/v1/search?site=1337x&query=eternals)
 
 <details open>
 <summary> See response</summary>
@@ -393,23 +402,31 @@ PYTHON_ENV=dev (if running local)
 ```json
 {
   "data": [
-    {
-      "name": "Eternals.2021.1080p.WEBRip.DDP5.1.x264-NOGRP",
-      "size": "5.6 GB",
+    { 
+      "name": "Eternals.2021.1080p.WEBRip.1600MB.DD5.1.x264-GalaxyRG",
+      "size": "1.6 GB",
       "date": "Jan. 11th '22",
-      "seeders": "10872",
-      "leechers": "6820",
-      "url": "https://1337xx.to/torrent/5110260/Eternals-2021-1080p-WEBRip-DDP5-1-x264-NOGRP/",
-      "uploader": "TheMorozko",
+      "seeders": "3674",
+      "leechers": "983",
+      "url": "https://1337x.to/torrent/5110228/Eternals-2021-1080p-WEBRip-1600MB-DD5-1-x264-GalaxyRG/",
+      "uploader": "TGxGoodies",
       "screenshot": [
-        "https://checkmy.pictures/images/2022/01/11/32162343474810151667.jpg",
-        "https://checkmy.pictures/images/2022/01/11/38515612831471833686.jpg",
-        "https://checkmy.pictures/images/2022/01/11/71518482909886223945.jpg"
+        "https://everest.picturedent.org/images/2022/01/11/tmpposter23827.jpg",
+        "https://everest.picturedent.org/images/2022/01/11/Harone8014.th.jpg",
+        "https://everest.picturedent.org/images/2022/01/11/Harone31320.th.jpg",
+        "https://everest.picturedent.org/images/2022/01/11/Harone8129XqiKn.th.jpg",
+        "https://everest.picturedent.org/images/2022/01/11/Harone27162.th.jpg",
+        "https://everest.picturedent.org/images/2022/01/11/Harone1352.th.jpg",
+        "https://everest.picturedent.org/images/2022/01/11/Harone14355.th.jpg"
       ],
       "category": "Movies",
-      "poster": "https://1337xx.to/img/movie/Eternals-2021.jpg",
-      "magnet": "magnet:?xt=urn:btih:A2AD2A669250A014BED19919E6C386DD4F82A883&dn=Eternals.2021.1080p.WEBRip.DDP5.1.x264-NOGRP&tr=http%3A%2F%2Ftracker.trackerfix.com%3A80%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2950%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2870%2Fannounce&tr=udp%3A%2F%2Ftracker.tallpenguin.org%3A15720%2Fannounce&tr=udp%3A%2F%2Ftracker.thinelephant.org%3A12780%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce",
-      "hash": "A2AD2A669250A014BED19919E6C386DD4F82A883"
+      "files": [
+        "Eternals.2021.1080p.WEBRip.1600MB.DD5.1.x264-GalaxyRG.mkv (1.6 GB)",
+        "[TGx]Downloaded from torrentgalaxy.to .txt (0.7 KB)"
+      ],
+      "poster": "https://lx1.dyncdn.cc/cdn/02/0251ab7772c031c1130bc92810758cd4.jpg",
+      "magnet": "magnet:?xt=urn:btih:20F8D7C2942B143E6E2A0FB5562CDE7EE1B17822&dn=Eternals.2021.1080p.WEBRip.1600MB.DD5.1.x264-GalaxyRG&tr=udp://open.stealth.si:80/announce&tr=udp://tracker.tiny-vps.com:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://tracker.torrent.eu.org:451/announce&tr=udp://explodie.org:6969/announce&tr=udp://tracker.cyberia.is:6969/announce&tr=udp://ipv4.tracker.harry.lu:80/announce&tr=udp://p4p.arenabg.com:1337/announce&tr=udp://tracker.birkenwald.de:6969/announce&tr=udp://tracker.moeking.me:6969/announce&tr=udp://opentor.org:2710/announce&tr=udp://tracker.dler.org:6969/announce&tr=udp://9.rarbg.me:2970/announce&tr=https://tracker.foreverpirates.co:443/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=http://tracker.openbittorrent.com:80/announce&tr=udp://opentracker.i2p.rocks:6969/announce&tr=udp://tracker.internetwarriors.net:1337/announce&tr=udp://tracker.leechers-paradise.org:6969/announce&tr=udp://coppersurfer.tk:6969/announce&tr=udp://tracker.zer0day.to:1337/announce",
+      "hash": "20F8D7C2942B143E6E2A0FB5562CDE7EE1B17822"
     }
   ],
   "current_page": 1,
@@ -424,42 +441,20 @@ PYTHON_ENV=dev (if running local)
 
 ---
 
-# How to Host On Repl.it
-
-```sh
-> Fork this repo
-> Import repo from github in repl
-> Command : python main.py
-> Install Requirements manually !very important
-> Add Environment variables from .env file in repl
-> And Run Your repl
-
-Note :  Due to CPU limitations Repl will take much more time than Heroku and everytime you pull new changes to repl you have to add REDIS_URI
-
-Test Here : https://Torrent-Api-py.ryukme.repl.co/api/v1/search?site=tgx&query=avengers&limit=5
-```
-
----
-
-# ~~~How to Host On Okteto~~~
-
-```sh
-> Fork this repo
-> Go to  okteto-stack.yaml file and add REDIS_URI in environment
-> Now visit https://www.okteto.com/ and login via Github
-> Now select the repository u want to deploy and and just click on deploy don't add any environment variable there
-> Now wait for some time and your api will be live
-
-```
-
 ## Donations
 
-<p> If you feel like showing your appreciation for this project, then how about buying me a coffee.</p>
+<p> If you feel like showing your appreciation for this project, then how about buying me a coffee?</p>
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/ryukmee)
 
 ---
 
-#### You can fork the repo and deploy on VPS or deploy it on Heroku :)
+## DEPLOY
+
+<a href="https://render.com/deploy?repo=https://github.com/Ryuk-me/Torrent-Api-py">
+<img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" />
+</a>
+
+</br>
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/GdriveCMT/Torrent-Api-py)

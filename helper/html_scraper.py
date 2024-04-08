@@ -1,19 +1,17 @@
+import os
 import asyncio
-
 from .asyncioPoliciesFix import decorator_asyncio_fix
+from constants.headers import HEADER_AIO
+
+HTTP_PROXY = os.environ.get("HTTP_PROXY", None)
 
 
 class Scraper:
     @decorator_asyncio_fix
     async def _get_html(self, session, url):
         try:
-            async with session.get(
-                url,
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"
-                },
-            ) as r:
-                return await r.text(encoding="ISO-8859-1")
+            async with session.get(url, headers=HEADER_AIO, proxy=HTTP_PROXY) as r:
+                return await r.text()
         except:
             return None
 

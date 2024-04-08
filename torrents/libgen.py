@@ -1,26 +1,25 @@
 import asyncio
-import re
 import time
-
 import aiohttp
 from bs4 import BeautifulSoup
-
 from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import LIBGEN
+from constants.headers import HEADER_AIO
 
 
 class Libgen:
     def __init__(self):
-        self.BASE_URL = "https://libgen.is"
+        self.BASE_URL = LIBGEN
         self.LIMIT = None
 
     @decorator_asyncio_fix
     async def _individual_scrap(self, session, url, obj, sem):
         async with sem:
             try:
-                async with session.get(url) as res:
+                async with session.get(url, headers=HEADER_AIO) as res:
                     html = await res.text(encoding="ISO-8859-1")
-                    soup = BeautifulSoup(html, "lxml")
+                    soup = BeautifulSoup(html, "html.parser")
                     try:
                         x = soup.find_all("a")
                         for a in x:
@@ -32,7 +31,7 @@ class Libgen:
                         if poster:
                             obj["poster"] = "http://library.lol" + poster["src"]
                     except:
-                        pass
+                        ...
             except:
                 return None
 
@@ -51,9 +50,8 @@ class Libgen:
 
     def _parser(self, htmls):
         try:
-
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 list_of_urls = []
                 my_dict = {"data": []}
                 trs = soup.select("[valign=top]")
@@ -74,7 +72,7 @@ class Libgen:
                     try:
                         pages = td[5].text
                     except:
-                        pass
+                        ...
                     language = td[6].text
                     size = td[7].text
                     extension = td[8].text
@@ -114,7 +112,7 @@ class Libgen:
     async def parser_result(self, start_time, url, session):
         htmls = await Scraper().get_all_results(session, url)
         result, urls = self._parser(htmls)
-        if result != None:
+        if result is not None:
             results = await self._get_torrent(result, session, urls)
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])

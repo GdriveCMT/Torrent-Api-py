@@ -1,25 +1,25 @@
 import asyncio
 import re
 import time
-
 import aiohttp
 from bs4 import BeautifulSoup
-
 from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import YTS
+from constants.headers import HEADER_AIO
 
 
 class Yts:
     def __init__(self):
-        self.BASE_URL = "https://yts.mx"
+        self.BASE_URL = YTS
         self.LIMIT = None
 
     @decorator_asyncio_fix
     async def _individual_scrap(self, session, url, obj):
         try:
-            async with session.get(url) as res:
+            async with session.get(url, headers=HEADER_AIO) as res:
                 html = await res.text(encoding="ISO-8859-1")
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 try:
                     name = soup.select_one("div.hidden-xs h1").text
                     div = soup.select("div.hidden-xs h2")
@@ -33,13 +33,14 @@ class Yts:
                     )
                     poster[-1] = poster[-1].replace("medium", "large")
                     poster = "/".join(poster)
-                    description = soup.select("div#synopsis .hidden-xs")[0].text.strip()
+                    description = soup.select("div#synopsis > p")[0].text.strip()
                     runtime = (
                         soup.select_one(".tech-spec-info")
                         .find_all("div", class_="row")[-1]
                         .find_all("div")[-3]
                         .text.strip()
                     )
+
                     screenshots = soup.find_all("a", class_="screenshot-group")
                     screenshots = [a["href"] for a in screenshots]
                     torrents = []
@@ -73,7 +74,7 @@ class Yts:
                     obj["screenshot"] = screenshots
                     obj["torrents"] = torrents
                 except:
-                    pass
+                    ...
         except:
             return None
 
@@ -91,9 +92,8 @@ class Yts:
 
     def _parser(self, htmls):
         try:
-
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 list_of_urls = []
                 my_dict = {"data": []}
                 for div in soup.find_all("div", class_="browse-movie-wrap"):
@@ -120,7 +120,7 @@ class Yts:
                         )
 
                 except:
-                    pass
+                    ...
                 return my_dict, list_of_urls
         except:
             return None, None
@@ -145,7 +145,7 @@ class Yts:
     async def parser_result(self, start_time, url, session):
         htmls = await Scraper().get_all_results(session, url)
         result, urls = self._parser(htmls)
-        if result != None:
+        if result is not None:
             results = await self._get_torrent(result, session, urls)
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])
@@ -163,5 +163,11 @@ class Yts:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = self.BASE_URL + "/browse-movies/0/all/all/0/featured/0/all"
+            if page != 1:
+                url = (
+                    self.BASE_URL
+                    + "/browse-movies/0/all/all/0/featured/0/all?page={}".format(page)
+                )
+            else:
+                url = self.BASE_URL + "/browse-movies/0/all/all/0/featured/0/all"
             return await self.parser_result(start_time, url, session)

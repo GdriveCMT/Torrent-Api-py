@@ -1,22 +1,22 @@
 import asyncio
 import re
 import time
-
 import aiohttp
 import cloudscraper
 import requests
 from bs4 import BeautifulSoup
+from constants.base_url import MAGNETDL
 
 
 class Magnetdl:
     def __init__(self):
-        self.BASE_URL = "https://www.magnetdl.com"
+        self.BASE_URL = MAGNETDL
         self.LIMIT = None
 
     def _parser(self, htmls):
         try:
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
 
                 my_dict = {"data": []}
                 table = soup.find("table", class_="download")
@@ -103,7 +103,7 @@ class Magnetdl:
     async def parser_result(self, start_time, url, session):
         data = await self._get_all_results(session, url)
         results = self._parser(data)
-        if results != None:
+        if results is not None:
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])
             return results

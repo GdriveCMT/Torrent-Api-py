@@ -1,17 +1,17 @@
 import asyncio
 import time
-
 import aiohttp
 import requests
 from bs4 import BeautifulSoup
-
 from helper.asyncioPoliciesFix import decorator_asyncio_fix
 from helper.html_scraper import Scraper
+from constants.base_url import TORRENTPROJECT
+from constants.headers import HEADER_AIO
 
 
 class TorrentProject:
     def __init__(self):
-        self.BASE_URL = "https://torrentproject2.com"
+        self.BASE_URL = TORRENTPROJECT
         self.LIMIT = None
 
     @decorator_asyncio_fix
@@ -20,12 +20,10 @@ class TorrentProject:
             try:
                 async with session.get(
                     url,
-                    headers={
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-                    },
+                    headers=HEADER_AIO,
                 ) as res:
                     html = await res.text(encoding="ISO-8859-1")
-                    soup = BeautifulSoup(html, "lxml")
+                    soup = BeautifulSoup(html, "html.parser")
                     try:
                         magnet = soup.select_one(
                             "#download > div:nth-child(2) > div > a"
@@ -34,7 +32,7 @@ class TorrentProject:
                         magnet = requests.utils.unquote(magnet[index_of_magnet:])
                         obj["magnet"] = magnet
                     except:
-                        pass
+                        ...
             except:
                 return None
 
@@ -53,9 +51,8 @@ class TorrentProject:
 
     def _parser(self, htmls):
         try:
-
             for html in htmls:
-                soup = BeautifulSoup(html, "lxml")
+                soup = BeautifulSoup(html, "html.parser")
                 list_of_urls = []
                 my_dict = {"data": []}
                 for div in soup.select("div#similarfiles div")[2:]:
@@ -94,7 +91,7 @@ class TorrentProject:
     async def parser_result(self, start_time, url, session):
         htmls = await Scraper().get_all_results(session, url)
         result, urls = self._parser(htmls)
-        if result != None:
+        if result is not None:
             results = await self._get_torrent(result, session, urls)
             results["time"] = time.time() - start_time
             results["total"] = len(results["data"])
